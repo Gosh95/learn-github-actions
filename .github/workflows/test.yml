@@ -1,0 +1,23 @@
+name: Test Workflow
+on:
+  push: # main 브랜치에서 git push 이벤트가 일어나면 워크플로우 실행
+    branches:
+      - 'main'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3 # GitHubActions 에서 제공하는 워크 플로우. 레포지토리의 최신 소스를 가져온다.
+      - name: Install NodeJS # 실행기 마다 지원하는 플랫폼이 다르다.(ubuntu는 node가 설치되어 있음) 하지만 없는 경우 이런식으로 설치가 가능하다.
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: |
+          cd react-dummy
+          npm install
+      - name: Run tests
+        run: |
+          cd react-dummy
+          npm test

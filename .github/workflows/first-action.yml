@@ -7,7 +7,7 @@ jobs:
       - name: Print Hello
         run: echo Hello
       - name: Print multi lines
-        run: |
+        run: | # | 를 사용하면 멀티 라인 가능
           echo 1
           echo 2
           echo 3
