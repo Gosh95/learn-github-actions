@@ -16,6 +16,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      script-file: ${{ steps.publish.outputs.script-file }} # steps.{id}.outputs.{outputs 이름}
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -23,8 +25,11 @@ jobs:
         run: npm ci
       - name: Build code
         run: npm run build
+      - name: Publish JS filename
+        id: publish
+        run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';' # 키-밸류 형태로 쓰인다.
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3 # 해당 작업의 결과물을 공유할 수 있다.(다운로드 등)
+        uses: actions/upload-artifact@v3
         with:
           name: dist-files
           path: dist
@@ -33,11 +38,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get artifacts
-        uses: actions/download-artifact@v3 # 전 작업에서 빌드한 파일을 가져온다.
+        uses: actions/download-artifact@v3
         with:
           name: dist-files
           path: dist
-      - name: Output contents # 빌드 파일 존재여부 확인
+      - name: Output contents
         run: ls
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}"
       - name: Deploy
         run: echo Deploying...
