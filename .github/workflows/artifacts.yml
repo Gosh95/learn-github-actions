@@ -9,6 +9,11 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache dependencies # 작업마다 똑같은 npm 종속성 설치가 이루어진다. 이를 캐싱하여 워크플로우 속도를 높일 수 있다. 캐싱 스텝은 모든 작업에 작성해줘야 한다.
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # 유니크한 키 값
       - name: Install dependencies
         run: npm ci
       - name: Test code
@@ -21,6 +26,11 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # 유니크한 키 값
       - name: Install dependencies
         run: npm ci
       - name: Build code
@@ -42,6 +52,11 @@ jobs:
         with:
           name: dist-files
           path: dist
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # 유니크한 키 값
       - name: Output contents
         run: ls
       - name: Output filename
