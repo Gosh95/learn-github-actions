@@ -10,11 +10,13 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v3
       - name: Cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json')}}
-      - name: Install dependencies
+      - name: Install dependencies # 캐싱된 node_modules 가 있으면 npm ci 를 통해서 다시 node_modules를 생성하지 않는다.
+        if: steps.cache.outputs.cache-hit != 'true' 
         run: npm ci
       - name: Test code
         id: run-tests
@@ -32,11 +34,13 @@ jobs:
       - name: Get Code
         uses: actions/checkout@v3
       - name: Cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json')}}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build website
         id: build-website
@@ -58,7 +62,7 @@ jobs:
         run: ls
       - name: Deploy
         run: echo Deploying...
-  report: # 작업 단위에도 조건절을 추가할 수 있다.
+  report:
     needs: [test, deploy]
     if: failure()
     runs-on: ubuntu-latest
