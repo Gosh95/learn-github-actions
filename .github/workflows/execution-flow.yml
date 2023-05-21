@@ -58,3 +58,12 @@ jobs:
         run: ls
       - name: Deploy
         run: echo Deploying...
+  report: # 작업 단위에도 조건절을 추가할 수 있다.
+    needs: [test, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo Something went wrong
+          echo "${{ github }}"
